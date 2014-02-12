@@ -23,6 +23,14 @@ def delpyc():
 
 @task
 @runs_once
+def shell():
+    """
+    Opens a Django shell on the target environment.
+    """
+    local('python manage.py shell')
+
+@task
+@runs_once
 def provision():
     """
     Runs the local Django server
@@ -35,7 +43,7 @@ def syncdb():
     """
     Runs the local Django server
     """
-    # local("rm ")
+    local("python manage.py syncdb")
 
 
 # @task
