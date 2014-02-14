@@ -1,3 +1,13 @@
+{% load url from future %}
+
+<h2>Authors</h2>
+
 {% for author in authors %}
-    {{author.first_name}} {{author.last_name}} <br />
+    <a href="{% url 'author-instance' author.id %}">{{author.first_name}} {{author.last_name}}</a> <br />
+{% endfor %}
+
+<h2>Books</h2>
+
+{% for book in books %}
+    <a href="{% url 'book-instance' book.id %}">{{book.isbn}} - {{book.title}}</a> <br />
 {% endfor %}
