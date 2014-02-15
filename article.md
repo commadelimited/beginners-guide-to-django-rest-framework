@@ -1,6 +1,8 @@
 # Beginner's Guide to the Django Rest Framework
 
-So you're learning to use the Django Web Framework and you're loving it. But you want an attractive, easy to use API for your application? Perhaps one that will automatically deliver content in a number of formats? Look no further than the [Django Rest Framework](http://www.django-rest-framework.org/) (the DRF). The DRF is powerful, sophisticated, and surprisingly easy to use. It features API endpoints that can display either a web view (when hit from your browser), or raw JSON, when hit via an AJAX or curl request. It has built in serialization of models, and allows standard function based views, or powerful class based views for more complex functionality. It's also completely REST compliant 
+So you're learning to use the Django Web Framework and you're loving it. But you want an attractive, easy to use API for your application? Perhaps one that will automatically deliver content in a number of formats? Look no further than the [Django Rest Framework](http://www.django-rest-framework.org/) (the DRF). The DRF is powerful, sophisticated, and surprisingly easy to use.
+
+It offers an attractive web browseable version of your API, and the option of returning raw JSON when hit via an AJAX or curl request. OAuth1 and OAuth2 are baked right in. The framework allows developers to access it's powerful model serialization. You can also use standard function based views, or powerful class based views for more complex functionality. Finally it's completely REST compliant.
 
 ## Preparing the foundation
 

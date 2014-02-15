@@ -2,12 +2,18 @@
 
 <h2>Authors</h2>
 
-{% for author in authors %}
-    <a href="{% url 'author-instance' author.id %}">{{author.first_name}} {{author.last_name}}</a> <br />
-{% endfor %}
+<ul>
+    {% for author in authors %}
+        <li>
+            <a href="{% url 'author-instance' author.id %}">{{author.first_name}} {{author.last_name}}</a>
+        </li>
+    {% endfor %}
+</ul>
 
 <h2>Books</h2>
 
-{% for book in books %}
-    <a href="{% url 'book-instance' book.id %}">{{book.isbn}} - {{book.title}}</a> <br />
-{% endfor %}
+<ul>
+    {% for book in books %}
+        <li><a href="{% url 'book-instance' book.id %}">{{book.isbn}} - {{book.title}}</a></li>
+    {% endfor %}
+</ul>
