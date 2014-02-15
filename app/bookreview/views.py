@@ -60,8 +60,6 @@ class AuthorInstanceView(generics.RetrieveUpdateDestroyAPIView):
     model = Author
     serializer_class = AuthorSerializer
 
-    # serializer_class = AuthorSerializer
-
 
 class BookView(generics.ListAPIView):
     """

@@ -11,7 +11,7 @@ def runserver():
     """
     Runs the local Django server
     """
-    local('python ./manage.py runserver')
+    local('open "http://127.0.0.1:8000" && python ./manage.py runserver')
 
 @task
 @runs_once
