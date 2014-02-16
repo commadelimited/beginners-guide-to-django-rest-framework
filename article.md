@@ -64,7 +64,9 @@ Unfortunately this doesn't return data that an AJAX call can understand. So let'
 
 ```
 class AuthorSerializer(serializers.ModelSerializer):
-
+    """
+    Serializing all the Authors
+    """
     class Meta:
         model = Author
         fields = ('id', 'first_name', 'last_name')
@@ -91,7 +93,7 @@ First, open `bookreview/urls.py` and add the following line just after `index_vi
 url(r'^authors/$', views.AuthorView.as_view(), name='author-view'),
 ```
 
-Next, open `bookreview/views.py` and add these lines:
+Next, open `bookreview/views.py` and add these lines to the end of the file:
 
 ```
 class AuthorView(generics.ListAPIView):
@@ -102,16 +104,64 @@ class AuthorView(generics.ListAPIView):
     serializer_class = AuthorSerializer
 ```
 
-The default view for Django Rest Framework is the APIView. It allows you to define your own get, put, and delete methods. It's a good way to get base functionality but still have control over the end result. In our case though we're letting the DRF do the heavy lifting for us by extending the ListAPIView. We just need to provide a few pieces of information to allow the DRF to connect the pieces. So we give it the Author model so that it knows how to connect to the database, and the AuthorSerializer so that the DRF knows how to return the information. We'll only be working with a few of the built in APIViews, but you can [read about all of the options](http://www.django-rest-framework.org/api-guide/generic-views) on the Django Rest Framework website.
+The default view for Django Rest Framework is the APIView. It allows you to define your own get, put, and delete methods. It's a good way to get base functionality but still have control over the end result. In our case though we're letting the DRF do the heavy lifting for us by extending the ListAPIView. We just need to provide a few pieces of information to allow the DRF to connect the pieces. We give it the Author model so that it knows how to talk to the database, and the AuthorSerializer so that the DRF knows how to return the information. We'll only be working with a few of the built in APIViews, but you can [read about all of the options](http://www.django-rest-framework.org/api-guide/generic-views) on the Django Rest Framework website.
 
-Now that you've made those changes, make sure you've got the server running by typing `fab runserver` then enter the URL `http://127.0.0.1:8000/authors/`. You should see an attractively designed API view page containing a list of all the authors in the database.
+Now that you've made those changes, make sure you've got the server running by typing `fab runserver` then enter the URL `http://127.0.0.1:8000/authors/`. You should see an attractively designed API view page containing a list of all the authors in the database; something like this:
 
+![image](images/author_api_view.png)
 
+Now that we've the Authors API view in place, try hitting that URL with a curl command:
 
+```
+$ curl http://127.0.0.1:8000/authors/
+> [{"id": 1, "first_name": "Andy", "last_name": "Matthews"},..., {"id": 10, "first_name": "Jesse", "last_name": "Petersen"}]
+```
 
+Pretty snazzy eh?
 
+### Adding in the Books model
 
+While this API view is pretty slick, it's not much more useful than what's on the index page. Let's kick up our API view by composing a more complex data set for Authors, we're going to also include a list of all books as well. We'll also add an API endpoint to view a single Author. Open `bookreview/serializers.py` and add the following line of code immediately after the docstring:
 
+```
+books = serializers.SerializerMethodField('get_books')
+```
+
+Before we move on, let's examine this line. The serializer is clever...because we indicated which Model it should serialize, it knows everything about that model...properties, lengths, defaults, etc. Notice that we're not defining first_name, last_name, or id directly within the serializer, we're only indicating which fields should be returned to the API. That happens in the `fields` property. Try removing first_name from the list, then reload the browser window.
+
+Because the DRF already knows about the properties of the model, it doesn't require us to repeat ourselves. We could just as easily add the following lines and the DRF would be just as happy.
+
+```
+first_name = serializers.Field(source='first_name')
+last_name = serializers.Field(source='last_name')
+```
+
+Serializers.field simply points to an existing property of the object, thje `source` field, and allows you to call it something else when returning it to the end user. But what about `serializers.SerializerMethodField`? That allows you to create a custom property, one that's not directly tied to the model, whose content is the result of a method call. In our case, we're going to return an array of books. Let's add that custom method now. Immediately after the `class Meta` definition add the following lines:
+
+```
+    def get_books(self, obj):
+        books = Book.objects.filter(author=obj)
+        return [
+            {
+                'id': book.id,
+                'title': book.title,
+                'isbn': book.isbn,
+            }
+            for book in books]
+```
+
+Then lastly we need to add our new property, books, to the list of fields. Change this:
+
+```
+fields = ('id', 'first_name', 'last_name')
+```
+to this:
+
+```
+fields = ('id', 'first_name', 'last_name', 'books')
+```
+
+Reload the `/authors/` endpoint and you should now see an array of books coming in for each author. Not bad for just a few more lines of code eh?
 
 
 

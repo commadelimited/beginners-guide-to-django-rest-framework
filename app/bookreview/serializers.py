@@ -7,23 +7,23 @@ from bookreview.models import (
 
 class AuthorSerializer(serializers.ModelSerializer):
     """
-    Interacting with the AuthorSerializer...
+    Serializing all the Authors
     """
-    # books = serializers.SerializerMethodField('get_books')
+    books = serializers.SerializerMethodField('get_books')
 
     class Meta:
         model = Author
-        fields = ('id', 'first_name', 'last_name')
+        fields = ('id', 'first_name', 'last_name', 'books')
 
-    # def get_books(self, obj):
-    #     books = Book.objects.filter(author=obj)
-    #     return [
-    #         {
-    #             'id': book.id,
-    #             'title': book.title,
-    #             'isbn': book.isbn,
-    #         }
-    #         for book in books]
+    def get_books(self, obj):
+        books = Book.objects.filter(author=obj)
+        return [
+            {
+                'id': book.id,
+                'title': book.title,
+                'isbn': book.isbn,
+            }
+            for book in books]
 
 
 # class BookSerializer(serializers.ModelSerializer):
