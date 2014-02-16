@@ -2,7 +2,7 @@
 
 So you're learning to use the Django Web Framework and you're loving it. But you want an attractive, easy to use API for your application? Perhaps one that will automatically deliver content in a number of formats? Look no further than the [Django Rest Framework](http://www.django-rest-framework.org/) (the DRF). The DRF is powerful, sophisticated, and surprisingly easy to use.
 
-It offers an attractive web browseable version of your API, and the option of returning raw JSON when hit via an AJAX or curl request. OAuth1 and OAuth2 are baked right in. The framework allows developers to use it's powerful model serialization. Display data using standard function based views, or get granular with powerful class based views for more complex functionality. And of course the Django Rest Framework is fully REST compliant.
+It offers an attractive web browseable version of your API, and the option of returning raw JSON when hit via an AJAX or curl request. The Django Rest Framework allows developers to use it's powerful model serialization. Display data using standard function based views, or get granular with powerful class based views for more complex functionality. All in a fully REST compliant wrapper. Let's dig in.
 
 ## Laying the foundation
 
@@ -20,9 +20,9 @@ $ workon drf
 
 ### Installing the Django application
 
-Since this article isn't about Django itself, I've saved some time by creating a repository containing the app we'll be working in. [Download the companion repository to this article](https://github.com/commadelimited/beginners-guide-to-django-rest-framework), into the directory of your choice, then run `pip install -r requirements.txt` to install all of the dependencies. Remember to make sure you've activated the virtual environment we set up in the last step.
+Since this article isn't about Django itself, I've saved some time by creating a repository containing the app we'll be working in. It's a simple bookshelf application which will allow us to store lists or authors, books, and ratings associated with said books. [Download the companion repository to this article](https://github.com/commadelimited/beginners-guide-to-django-rest-framework), into the directory of your choice, then run `pip install -r requirements.txt` to install all of the dependencies. Remember to make sure you've activated the virtual environment we set up in the last step.
 
-After you've taken the steps above, you should be able to type `fab runserver` to start a local web server, and open a web browser pointing to `http://127.0.0.1:8000/`. If you see a list of Authors and Books you're good to go.
+After you've taken the steps above, you should be able to type `fab runserver` to start a local web server, and open a web browser pointing to `http://127.0.0.1:8000/`. If you see a list of Authors on screen then you're good to go.
 
 #### Fab? What's that?
 
@@ -32,9 +32,102 @@ Fab == [Fabric](http://docs.fabfile.org/en/1.8/), a [Python task runner](https:/
 
 While a more complete discussion about Fabric is beyond the scope of this article, I've implemented some basic fab commands which make working with this application a little easier. You've seen the `fab runserver` command. There's also the `fab shell` command which brings up an interactive iPython shell within the context of the application.
 
-## Your first endpoint
+## Working with Serialization
+
+One powerful feature of the Django Rest Framework is the built in model serialization it offers. With just a few lines of code you can compose powerful representations of your data that can be delivered in a number of formats. Let's take a look. As previously mentioned, our application will be a simple bookshelf app, with Authors, Books, and Ratings. I've already created the Author model for you, so open up `/app/bookreview/models.py`. There are already a few Authors stored in the local SQLite database, so let's open up an interactive shell for our app and poke around. Switch to your Terminal window, make sure you're in the ./app directory and type in the following command.
+
+```
+$ fab shell
+```
+
+After the shell loads, input the next few lines to retrieve an Author record from the database, which just happens to be mine. What a coincidence. :)
+
+```
+$ from bookreview.models import Author
+$ author = Author.objects.get(pk=1)
+$ author.id
+> 1
+$ author.first_name
+> u'Andy'
+$ author.last_name
+> u'Matthews'
+```
+
+Similarly you can retrieve all of the Author records from the database with a different command:
+
+```
+$ from bookreview.models import Author
+$ authors = Author.objects.all()
+$ authors
+> [<Author: Andy Matthews>, <Author: China Mieville>, <Author: Neil Gaiman>, <Author: Veronica Roth>, <Author: Suzanne Collins>, <Author: Brandon Sanderson>, <Author: Rick Riordan>, <Author: Phillip K. Dick>, <Author: John Scalzi>, <Author: Jesse Petersen>]
+```
+Unfortunately this doesn't return data that an AJAX call can understand. So let's add a serializer for Authors. Close out the shell by typing `quit` and open up `bookreview/serializers.py`. Type, or paste, the next few lines of code and save the file.
+
+```
+class AuthorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Author
+        fields = ('id', 'first_name', 'last_name')
+```
+
+Without doing anything else the serializer adds quite a bit of power. Head back into the shell and let's review.
+
+```
+$ from bookreview.models import Author
+$ from bookreview.serializers import AuthorSerializer
+$ author = Author.objects.get(pk=1)
+$ serialized = AuthorSerializer(author)
+$ serialized.data
+> {'id': 1, 'first_name': u'Andy', 'last_name': u'Matthews'}
+```
+
+Let's take a few more steps and see what our API will show us in the browser after our data is run through our new AuthorSerializer. 
+
+### Checking out the web browseable API
+
+First, open `bookreview/urls.py` and make sure the following line is in place:
+
+```
+url(r'^authors/$', views.AuthorView.as_view(), name='author-view'),
+```
+
+Next, open `bookreview/views.py` and add these lines:
+
+```
+class AuthorView(generics.ListAPIView):
+    """
+    Returns a list of all authors.
+    """
+    model = Author
+    serializer_class = AuthorSerializer
+```
+
+This is your first look at a simple class-based view of the Django Rest Framework. You can see that our AuthorView extends from ListAPIView which means that it only allows read access. We'll only be working with a few of the possibilities, but you can [read about all of the options](http://www.django-rest-framework.org/api-guide/generic-views) on the Django Rest Framework website.
 
 
 
-## Writing tests
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

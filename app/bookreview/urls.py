@@ -10,8 +10,8 @@ urlpatterns = patterns(
     url(r'^authors/$', views.AuthorView.as_view(), name='author-view'),
     url(r'^authors/(?P<pk>[\d]+)/$', views.AuthorInstanceView.as_view(), name='author-instance'),
 
-    url(r'^books/$', views.BookView.as_view(), name='book-view'),
-    url(r'^books/(?P<pk>[\d]+)/$', views.BookInstanceView.as_view(), name='book-instance'),
+    # url(r'^books/$', views.BookView.as_view(), name='book-view'),
+    # url(r'^books/(?P<pk>[\d]+)/$', views.BookInstanceView.as_view(), name='book-instance'),
 
 )
 
