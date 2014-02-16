@@ -1,11 +1,9 @@
-{% load url from future %}
-
 <h2>Authors</h2>
 
 <ul>
     {% for author in authors %}
         <li>
-            <a href="{% url 'author-instance' author.id %}">{{author.first_name}} {{author.last_name}}</a>
+            <a href="/authors/{{author.id}}/">{{author.first_name}} {{author.last_name}}</a>
         </li>
     {% endfor %}
 </ul>

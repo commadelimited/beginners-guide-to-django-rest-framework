@@ -1,28 +1,27 @@
 # Beginner's Guide to the Django Rest Framework
 
-So you're learning to use the Django Web Framework and you're loving it. But you want an attractive, easy to use API for your application? Perhaps one that will automatically deliver content in a number of formats? Look no further than the [Django Rest Framework](http://www.django-rest-framework.org/) (the DRF). The DRF is powerful, sophisticated, and surprisingly easy to use.
-
-It offers an attractive web browseable version of your API, and the option of returning raw JSON when hit via an AJAX or curl request. The Django Rest Framework allows developers to use it's powerful model serialization. Display data using standard function based views, or get granular with powerful class based views for more complex functionality. All in a fully REST compliant wrapper. Let's dig in.
+So you're learning to use the Django Web Framework and you're loving it. But you want an attractive, easy to use API for your application? Perhaps one that will automatically deliver content in a number of formats? Look no further than the [Django Rest Framework](http://www.django-rest-framework.org/) (the DRF). The DRF is powerful, sophisticated, and surprisingly easy to use. It offers an attractive web browseable version of your API, and the option of returning raw JSON when hit via an AJAX or curl request. The Django Rest Framework allows provides powerful model serialization. Display data using standard function based views, or get granular with powerful class based views for more complex functionality. All in a fully REST compliant wrapper. Let's dig in.
 
 ## Laying the foundation
 
-When working with Python applications, it's always a good idea to sandbox your development with a virtual environment. That prevents namespace collisions between libraries you need in your application and libraries you might already have installed on your machine. Plus it makes it easy to install dependencies within a virtual env using the `requirements.txt` file. Tuts+ has two excellent videos on how to install [virtualenv](http://code.tutsplus.com/articles/python-power-tools-virtualenv--net-31560) and [virtualenvwrapper](http://code.tutsplus.com/articles/python-power-tools-virtualenvwrapper--net-31569). If you've already got them installed, then move on to the next section.
+When working with Python applications, it's always a good idea to sandbox your development with a virtual environment. It helps prevent namespace collisions between libraries you need in your application and libraries you might already have installed on your machine, it makes it easy to install dependencies within a virtual env using the `requirements.txt` file, and lastly it makes getting new developers up and running quickly.
 
-### Setting up a virtual environment
+Tuts+ has two excellent videos on how to install [virtualenv](http://code.tutsplus.com/articles/python-power-tools-virtualenv--net-31560) and [virtualenvwrapper](http://code.tutsplus.com/articles/python-power-tools-virtualenvwrapper--net-31569). If you've already got them installed, then skip the next section.
 
-First thing we'll do as part of our application is to set up our virtual environment. Enter the following commands 
+### Setting up your virtual environment
+
+First thing we'll do as part of our application is to set up the virtual environment. Enter the following commands in your Terminal.
 
 ```
-$ cd <where you want your app>
 $ mkvirtualenv drf
 $ workon drf
 ```
 
+It doesn't matter where you are in the file system when these commands are run. All virtualenv files are stored in a centralized location and activated on command.
+
 ### Installing the Django application
 
-Since this article isn't about Django itself, I've saved some time by creating a repository containing the app we'll be working in. It's a simple bookshelf application which will allow us to store lists or authors, books, and ratings associated with said books. [Download the companion repository to this article](https://github.com/commadelimited/beginners-guide-to-django-rest-framework), into the directory of your choice, then run `pip install -r requirements.txt` to install all of the dependencies. Remember to make sure you've activated the virtual environment we set up in the last step.
-
-After you've taken the steps above, you should be able to type `fab runserver` to start a local web server, and open a web browser pointing to `http://127.0.0.1:8000/`. If you see a list of Authors on screen then you're good to go.
+Since this article isn't about Django itself, I've saved some time by creating a repository containing the app we'll be working in. It's a simple bookshelf application which will allow us to store lists of authors, books, and ratings. [Download the companion repository to this article](https://github.com/commadelimited/beginners-guide-to-django-rest-framework), into the directory of your choice, then run `pip install -r requirements.txt` to install all of the dependencies. Remember to make sure you've activated the virtual environment we set up in the last step. After the installation is complete you should be able to type `fab runserver` to start a local web server, and open a web browser pointing to `http://127.0.0.1:8000/`. If you see a list of Authors on screen then you're good to go.
 
 #### Fab? What's that?
 
@@ -30,7 +29,7 @@ Fab == [Fabric](http://docs.fabfile.org/en/1.8/), a [Python task runner](https:/
 
 > Fabric is a Python (2.5 or higher) library and command-line tool for streamlining the use of SSH for application deployment or systems administration tasks.
 
-While a more complete discussion about Fabric is beyond the scope of this article, I've implemented some basic fab commands which make working with this application a little easier. You've seen the `fab runserver` command. There's also the `fab shell` command which brings up an interactive iPython shell within the context of the application.
+While a more complete discussion about Fabric is beyond the scope of this article, I've implemented some basic fab commands which make working with this application a little easier. You've seen the `fab runserver` command. There's also the `fab shell` command which brings up an interactive iPython shell within the context of the application and the `fab syncdb` command which runs Django's syncdb command to sync changes in models to the database.
 
 ## Working with Serialization
 
@@ -71,7 +70,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ('id', 'first_name', 'last_name')
 ```
 
-Without doing anything else the serializer adds quite a bit of power. Head back into the shell and let's review.
+Without making any more changes, the serializer gives us quite a bit of power. Head back into the shell and let's review.
 
 ```
 $ from bookreview.models import Author
@@ -82,11 +81,11 @@ $ serialized.data
 > {'id': 1, 'first_name': u'Andy', 'last_name': u'Matthews'}
 ```
 
-Let's take a few more steps and see what our API will show us in the browser after our data is run through our new AuthorSerializer. 
+Let's add a few more lines of code and see what our API will show us in the browser after our data is run through our new AuthorSerializer. 
 
 ### Checking out the web browseable API
 
-First, open `bookreview/urls.py` and make sure the following line is in place:
+First, open `bookreview/urls.py` and add the following line just after `index_view`:
 
 ```
 url(r'^authors/$', views.AuthorView.as_view(), name='author-view'),
@@ -103,9 +102,9 @@ class AuthorView(generics.ListAPIView):
     serializer_class = AuthorSerializer
 ```
 
-This is your first look at a simple class-based view of the Django Rest Framework. You can see that our AuthorView extends from ListAPIView which means that it only allows read access. We'll only be working with a few of the possibilities, but you can [read about all of the options](http://www.django-rest-framework.org/api-guide/generic-views) on the Django Rest Framework website.
+The default view for Django Rest Framework is the APIView. It allows you to define your own get, put, and delete methods. It's a good way to get base functionality but still have control over the end result. In our case though we're letting the DRF do the heavy lifting for us by extending the ListAPIView. We just need to provide a few pieces of information to allow the DRF to connect the pieces. So we give it the Author model so that it knows how to connect to the database, and the AuthorSerializer so that the DRF knows how to return the information. We'll only be working with a few of the built in APIViews, but you can [read about all of the options](http://www.django-rest-framework.org/api-guide/generic-views) on the Django Rest Framework website.
 
-
+Now that you've made those changes, make sure you've got the server running by typing `fab runserver` then enter the URL `http://127.0.0.1:8000/authors/`. You should see an attractively designed API view page containing a list of all the authors in the database.
 
 
 

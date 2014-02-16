@@ -1,17 +1,9 @@
-from django.shortcuts import (
-    render,
-)
+from django.shortcuts import render
 
 from rest_framework import generics
 
-from bookreview.models import (
-    Author,
-    # Book
-)
-from bookreview.serializers import (
-    AuthorSerializer,
-    # BookSerializer,
-)
+from bookreview.models import Author
+from bookreview.serializers import AuthorSerializer
 
 def index_view(request):
     """
