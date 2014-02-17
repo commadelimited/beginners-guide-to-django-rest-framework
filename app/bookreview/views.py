@@ -16,7 +16,7 @@ def index_view(request):
     return render(request, 'index.html', response)
 
 
-class AuthorView(generics.ListAPIView):
+class AuthorView(generics.ListCreateAPIView):
     """
     Returns a list of all authors.
     """
@@ -24,7 +24,7 @@ class AuthorView(generics.ListAPIView):
     serializer_class = AuthorSerializer
 
 
-class AuthorInstanceView(generics.RetrieveUpdateDestroyAPIView):
+class AuthorInstanceView(generics.RetrieveAPIView):
     """
     Returns a single author.
     Also allows updating and deleting

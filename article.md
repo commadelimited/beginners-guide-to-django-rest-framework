@@ -119,9 +119,9 @@ $ curl http://127.0.0.1:8000/authors/
 
 Pretty snazzy eh?
 
-### Adding in the Books model
+### Adding the Books model
 
-While this API view is pretty slick, it's not much more useful than what's on the index page. Let's kick up our API view by composing a more complex data set for Authors, we're going to also include a list of all books as well. We'll also add an API endpoint to view a single Author. Open `bookreview/serializers.py` and add the following line of code immediately after the docstring:
+While this API view is pretty slick, it's not much more useful than what's on the index page. Let's kick up our API view by composing a more complex data set for Authors, we're going to also include a list of all books as well. Open `bookreview/serializers.py` and add the following line of code immediately after the docstring:
 
 ```
 books = serializers.SerializerMethodField('get_books')
@@ -129,25 +129,25 @@ books = serializers.SerializerMethodField('get_books')
 
 Before we move on, let's examine this line. The serializer is clever...because we indicated which Model it should serialize, it knows everything about that model...properties, lengths, defaults, etc. Notice that we're not defining first_name, last_name, or id directly within the serializer, we're only indicating which fields should be returned to the API. That happens in the `fields` property. Try removing first_name from the list, then reload the browser window.
 
-Because the DRF already knows about the properties of the model, it doesn't require us to repeat ourselves. We could just as easily add the following lines and the DRF would be just as happy.
+Because the DRF already knows about the properties of the model, it doesn't require us to repeat ourselves. We could just as easily add the following lines to the serializer and the DRF would be just as happy.
 
 ```
 first_name = serializers.Field(source='first_name')
 last_name = serializers.Field(source='last_name')
 ```
 
-Serializers.field simply points to an existing property of the object, thje `source` field, and allows you to call it something else when returning it to the end user. But what about `serializers.SerializerMethodField`? That allows you to create a custom property, one that's not directly tied to the model, whose content is the result of a method call. In our case, we're going to return an array of books. Let's add that custom method now. Immediately after the `class Meta` definition add the following lines:
+`Serializers.field` points to an existing property of the object, the `source` field, and allows you to explicitly name it something else when returning it to the end user. But what about `serializers.SerializerMethodField`? That allows you to create a custom property, one that's not directly tied to the model, whose content is the result of a method call. In our case, we're going to return an array of books. Let's add that custom method now. Immediately after the `class Meta` definition add the following lines:
 
 ```
-    def get_books(self, obj):
-        books = Book.objects.filter(author=obj)
-        return [
-            {
-                'id': book.id,
-                'title': book.title,
-                'isbn': book.isbn,
-            }
-            for book in books]
+def get_books(self, obj):
+    books = Book.objects.filter(author=obj)
+    return [
+        {
+            'id': book.id,
+            'title': book.title,
+            'isbn': book.isbn,
+        }
+        for book in books]
 ```
 
 Then lastly we need to add our new property, books, to the list of fields. Change this:
@@ -163,7 +163,64 @@ fields = ('id', 'first_name', 'last_name', 'books')
 
 Reload the `/authors/` endpoint and you should now see an array of books coming in for each author. Not bad for just a few more lines of code eh?
 
+### Adding an Author endpoint
 
+We already have a list of authors, but it would be nice for each author to have their own page...just like MySpace right? Lets add an API endpoint to view a single Author. Open `urls.py` and add the following line after the `author-list` route:
+
+```
+url(r'^authors/(?P<pk>[\d]+)/$', views.AuthorInstanceView.as_view(), name='author-instance'),
+```
+
+Then open `views.py` and add the following lines after the AuthorView class:
+
+```
+class AuthorInstanceView(generics.RetrieveAPIView):
+    """
+    Returns a single author.
+    Also allows updating and deleting
+    """
+    model = Author
+    serializer_class = AuthorSerializer
+```
+
+Click one of the Author names on the index page and you should see the Author Instance page load up.
+
+#### Refactoring for the win!
+
+Now would be a good time to do a quick bit of refactoring. Since Django offers the option of naming your routes, we can reference the route by that name. This prevents us from having to build the URL manually. Open `templates/index.html` and swap out the following piece:
+
+```
+<!-- this URL is built manually -->
+<a href="/authors/{{author.id}}/">{{author.first_name}} {{author.last_name}}</a>
+```
+
+with this line:
+
+```
+<a href="{% url 'author-instance' author.id %}">{{author.first_name}} {{author.last_name}}</a>
+```
+
+## Saving data. Let the DRF work for you!
+
+Up until now our app has been read only. It's time to start saving some data. Open `templates/index.html` and add the following lines underneath the Authors header:
+
+```
+<form action="{% url 'author-list' %}" method="post">
+    <input type="text" name="first_name" />
+    <input type="text" name="last_name" />
+    <input type="submit" value="Add Author" />
+</form>
+```
+
+Type in a name, yours if you have those sort of ambitions, and hit submit...and presto, you get...an error?
+
+![image](images/405.jpg =500x)
+
+The DRF isn't quite THAT magical...or is it?
+
+Open `views.py`, change the class that AuthorView extends from `generics.ListAPIView` to `generics.ListCreateAPIView`. Then try your request again. Boom! You're an author! And your 4th grade gym teacher said you'd never amount to anything. But what did he know? GO back to the main Author's page to see your name in lights.
+
+Keep in mind that while the DRF does enforce database integrity based on the properties of the Model, we're not setting any sort of security on who can access or use this form. Diving into security, logging in, and managing permissions is outside the scope of this article, but suffice it to say that [DRF does have functionality](http://www.django-rest-framework.org/api-guide/permissions) for allowing access to the Views you've been working with, and it's fairly trivial to set up.
 
 
 
