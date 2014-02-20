@@ -235,7 +235,3 @@ def post(self, *args, **kwargs):
 ```
 
 Keep in mind that while the DRF does enforce database integrity based on the properties of the Model, we're not setting any sort of security on who can access or use this form. Diving into security, logging in, and managing permissions is outside the scope of this article, but suffice it to say that [DRF does have functionality](http://www.django-rest-framework.org/api-guide/permissions) for allowing access to the Views you've been working with, and it's fairly trivial to set up.
-
-## Putting it all together
-
-There are many other things the DRF can do for your app, this is just the beginning. Why not add an endpoint to your API for books? Take what you've learned and compose a view and serializer for the books similar to that of Authors. Refactor existing code by altering the get_books method to serialize the Books being returned. That would prevent you from having to explicitly define the object being returned. Read up on the additional built in Views offered by the DRF that will really help you streamline your work. Go forward and design a beautiful and robust API!
