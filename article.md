@@ -106,6 +106,12 @@ class AuthorView(generics.ListAPIView):
     serializer_class = AuthorSerializer
 ```
 
+Then make sure to add the import for the AuthorSerializer at the top of the page:
+
+```
+from bookreview.serializers import AuthorSerializer
+``` 
+
 The default view for Django Rest Framework is the APIView. It allows you to define your own get, put, and delete methods. It's a good way to get base functionality but still have control over the end result. In our case though we're letting the DRF do the heavy lifting for us by extending the ListAPIView. We just need to provide a few bits of information to allow the DRF to connect the pieces. We give it the Author model so that it knows how to talk to the database, and the AuthorSerializer so that the DRF knows how to return the information. We'll only be working with a few of the built in APIViews, but you can [read about all of the options](http://www.django-rest-framework.org/api-guide/generic-views) on the Django Rest Framework website.
 
 Now that you've made those changes, make sure you've got the server running by typing `fab runserver` then enter the URL `http://127.0.0.1:8000/authors/`. You should see an attractively designed API view page containing a list of all the authors in the database; something like this:
@@ -192,7 +198,6 @@ Click one of the Author names on the index page and you should see the Author In
 Now would be a good time to do a quick bit of refactoring. Since Django offers the option of naming your routes, we can reference the route by that name. This prevents us from having to build the URL manually. Open `templates/index.html` and swap out the following piece:
 
 ```
-<!-- this URL is built manually -->
 <a href="/authors/{{author.id}}/">{{author.first_name}} {{author.last_name}}</a>
 ```
 
@@ -234,17 +239,3 @@ Keep in mind that while the DRF does enforce database integrity based on the pro
 ## Putting it all together
 
 There are many other things the DRF can do for your app, this is just the beginning. Why not add an endpoint to your API for books? Take what you've learned and compose a view and serializer for the books similar to that of Authors. Refactor existing code by altering the get_books method to serialize the Books being returned. That would prevent you from having to explicitly define the object being returned. Read up on the additional built in Views offered by the DRF that will really help you streamline your work. Go forward and design a beautiful and robust API!
-
-
-
-
-
-
-
-
-
-
-
-
-
-
