@@ -23,6 +23,8 @@ It doesn't matter where you are in the file system when these commands are run. 
 
 Since this article isn't about Django itself, I've saved some time by creating a repository containing the app we'll be working in. It's a simple bookshelf application which will allow us to store lists of authors and books. [Download the companion repository to this article](https://github.com/commadelimited/beginners-guide-to-django-rest-framework), into the directory of your choice, then run `pip install -r requirements.txt` to install all of the dependencies. Remember to make sure you've activated the virtual environment we set up in the last step. After the installation is complete you should be able to type `fab runserver` to start a local web server, and open a web browser pointing to `http://127.0.0.1:8000/`. If you see a list of Authors on screen then you're good to go.
 
+If at any point you're not getting the expected results, please try switching your local repository's branch to to final to see the results, `git checkout final`.
+
 #### Fab? What's that?
 
 Fab == [Fabric](http://docs.fabfile.org/en/1.8/), a [Python task runner](https://gist.github.com/DavidWittman/1886632). From the docs:
