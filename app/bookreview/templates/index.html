@@ -1,12 +1,6 @@
 {% load url from future %}
 
-<h2><a href="{% url 'author-list' %}" title="View all authors">Authors</a></h2>
-
-<form action="{% url 'author-list' %}" method="post">
-    <input type="text" name="first_name" />
-    <input type="text" name="last_name" />
-    <input type="submit" value="Add Author" />
-</form>
+<h2>Authors</h2>
 
 <ul>
     {% for author in authors %}
@@ -17,11 +11,3 @@
         </li>
     {% endfor %}
 </ul>
-
-<!-- <h2>Books</h2>
-
-<ul>
-    {% for book in books %}
-        <li><a href="{% url 'book-instance' book.id %}">{{book.isbn}} - {{book.title}}</a></li>
-    {% endfor %}
-</ul> -->

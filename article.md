@@ -90,7 +90,7 @@ Let's add a few more lines of code and see what our API will show us in the brow
 First, open `bookreview/urls.py` and add the following line just after the `index_view` route:
 
 ```
-url(r'^authors/$', views.AuthorView.as_view(), name='author-view'),
+url(r'^authors/$', views.AuthorView.as_view(), name='author-list'),
 ```
 
 Next, open `bookreview/views.py` and add these lines to the end of the file:
