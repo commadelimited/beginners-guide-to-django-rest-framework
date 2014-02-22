@@ -24,25 +24,3 @@ class AuthorSerializer(serializers.ModelSerializer):
                 'isbn': book.isbn,
             }
             for book in books]
-
-
-# class BookSerializer(serializers.ModelSerializer):
-#     """
-#     Interacting with the AuthorSerializer...
-#     """
-#     title = serializers.Field(source='title')
-#     isbn = serializers.Field(source='isbn')
-#     author = serializers.SerializerMethodField('get_author')
-
-#     class Meta:
-#         model = Book
-#         fields = ('id', 'title', 'isbn', 'author')
-
-#     def get_author(self, obj):
-#         authors = Author.objects.filter(id=obj.author.id)
-#         return [
-#             {
-#                 'first_name': author.first_name,
-#                 'last_name': author.last_name,
-#             }
-#             for author in authors]

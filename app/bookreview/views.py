@@ -31,20 +31,3 @@ class AuthorInstanceView(generics.RetrieveAPIView):
     """
     model = Author
     serializer_class = AuthorSerializer
-
-
-# class BookView(generics.ListAPIView):
-#     """
-#     Returns a list of all books.
-#     """
-#     model = Book
-#     serializer_class = BookSerializer
-
-
-# class BookInstanceView(generics.RetrieveUpdateDestroyAPIView):
-#     """
-#     Returns a single book.
-#     Also allows updating and deleting
-#     """
-#     model = Book
-#     serializer_class = BookSerializer
