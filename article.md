@@ -4,9 +4,9 @@ So you're learning to use the Django Web Framework and you're loving it. But you
 
 ## Laying the foundation
 
-When working with Python applications, it's always a good idea to sandbox your development with a virtual environment. It helps prevent namespace collisions between libraries you need in your application and libraries you might already have installed on your machine, it makes it easy to install dependencies within a virtual env using the `requirements.txt` file, and lastly it makes sharing your development environment with other developers a snap.
+When working with Python applications, it's always a good idea to sandbox your development with a virtual environment. It helps prevent version collisions between libraries you need in your application and libraries you might already have installed on your machine, it makes it easy to install dependencies within a _virtual env_ using the `requirements.txt` file, and lastly it makes sharing your development environment with other developers a snap.
 
-Tuts+ has two excellent videos on how to install [virtualenv](http://code.tutsplus.com/articles/python-power-tools-virtualenv--net-31560) and [virtualenvwrapper](http://code.tutsplus.com/articles/python-power-tools-virtualenvwrapper--net-31569). Take a few minutes to walk through those videos to get virtualenv installed on your machine. If you've already got them installed, then skip the next section.
+Tuts+ has two excellent videos on how to install [virtualenv](http://code.tutsplus.com/articles/python-power-tools-virtualenv--net-31560) and [virtualenvwrapper](http://code.tutsplus.com/articles/python-power-tools-virtualenvwrapper--net-31569). Take a few minutes to walk through those videos to get virtualenv and virtualenvwrapper installed on your machine. If you've already got them installed, then skip the next section.
 
 ### Setting up your virtual environment
 
