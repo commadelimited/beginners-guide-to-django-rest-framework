@@ -4,9 +4,9 @@ So you're learning to use the Django Web Framework and you're loving it. But you
 
 ## Laying the foundation
 
-When working with Python applications, it's always a good idea to sandbox your development with a virtual environment. It helps prevent namespace collisions between libraries you need in your application and libraries you might already have installed on your machine, it makes it easy to install dependencies within a virtual env using the `requirements.txt` file, and lastly it makes sharing your development environment with other developers a snap.
+When working with Python applications, it's always a good idea to sandbox your development with a virtual environment. It helps prevent version collisions between libraries you need in your application and libraries you might already have installed on your machine, it makes it easy to install dependencies within a _virtual env_ using the `requirements.txt` file, and lastly it makes sharing your development environment with other developers a snap.
 
-Tuts+ has two excellent videos on how to install [virtualenv](http://code.tutsplus.com/articles/python-power-tools-virtualenv--net-31560) and [virtualenvwrapper](http://code.tutsplus.com/articles/python-power-tools-virtualenvwrapper--net-31569). Take a few minutes to walk through those videos to get virtualenv installed on your machine. If you've already got them installed, then skip the next section.
+Tuts+ has two excellent videos on how to install [virtualenv](http://code.tutsplus.com/articles/python-power-tools-virtualenv--net-31560) and [virtualenvwrapper](http://code.tutsplus.com/articles/python-power-tools-virtualenvwrapper--net-31569). Take a few minutes to walk through those videos to get virtualenv and virtualenvwrapper installed on your machine. If you've already got them installed, then skip the next section.
 
 ### Setting up your virtual environment
 
@@ -22,6 +22,8 @@ It doesn't matter where you are in the file system when these commands are run. 
 ### Installing the Django application
 
 Since this article isn't about Django itself, I've saved some time by creating a repository containing the app we'll be working in. It's a simple bookshelf application which will allow us to store lists of authors and books. [Download the companion repository to this article](https://github.com/commadelimited/beginners-guide-to-django-rest-framework), into the directory of your choice, then run `pip install -r requirements.txt` to install all of the dependencies. Remember to make sure you've activated the virtual environment we set up in the last step. After the installation is complete you should be able to type `fab runserver` to start a local web server, and open a web browser pointing to `http://127.0.0.1:8000/`. If you see a list of Authors on screen then you're good to go.
+
+If at any point you're not getting the expected results, please try switching your local repository's branch to to final to see the results, `git checkout final`.
 
 #### Fab? What's that?
 
@@ -90,7 +92,7 @@ Let's add a few more lines of code and see what our API will show us in the brow
 First, open `bookreview/urls.py` and add the following line just after the `index_view` route:
 
 ```
-url(r'^authors/$', views.AuthorView.as_view(), name='author-view'),
+url(r'^authors/$', views.AuthorView.as_view(), name='author-list'),
 ```
 
 Next, open `bookreview/views.py` and add these lines to the end of the file:
@@ -103,6 +105,12 @@ class AuthorView(generics.ListAPIView):
     model = Author
     serializer_class = AuthorSerializer
 ```
+
+Then make sure to add the import for the AuthorSerializer at the top of the page:
+
+```
+from bookreview.serializers import AuthorSerializer
+``` 
 
 The default view for Django Rest Framework is the APIView. It allows you to define your own get, put, and delete methods. It's a good way to get base functionality but still have control over the end result. In our case though we're letting the DRF do the heavy lifting for us by extending the ListAPIView. We just need to provide a few bits of information to allow the DRF to connect the pieces. We give it the Author model so that it knows how to talk to the database, and the AuthorSerializer so that the DRF knows how to return the information. We'll only be working with a few of the built in APIViews, but you can [read about all of the options](http://www.django-rest-framework.org/api-guide/generic-views) on the Django Rest Framework website.
 
@@ -190,7 +198,6 @@ Click one of the Author names on the index page and you should see the Author In
 Now would be a good time to do a quick bit of refactoring. Since Django offers the option of naming your routes, we can reference the route by that name. This prevents us from having to build the URL manually. Open `templates/index.html` and swap out the following piece:
 
 ```
-<!-- this URL is built manually -->
 <a href="/authors/{{author.id}}/">{{author.first_name}} {{author.last_name}}</a>
 ```
 
@@ -228,21 +235,3 @@ def post(self, *args, **kwargs):
 ```
 
 Keep in mind that while the DRF does enforce database integrity based on the properties of the Model, we're not setting any sort of security on who can access or use this form. Diving into security, logging in, and managing permissions is outside the scope of this article, but suffice it to say that [DRF does have functionality](http://www.django-rest-framework.org/api-guide/permissions) for allowing access to the Views you've been working with, and it's fairly trivial to set up.
-
-## Putting it all together
-
-There are many other things the DRF can do for your app, this is just the beginning. Why not add an endpoint to your API for books? Take what you've learned and compose a view and serializer for the books similar to that of Authors. Refactor existing code by altering the get_books method to serialize the Books being returned. That would prevent you from having to explicitly define the object being returned. Read up on the additional built in Views offered by the DRF that will really help you streamline your work. Go forward and design a beautiful and robust API!
-
-
-
-
-
-
-
-
-
-
-
-
-
-
