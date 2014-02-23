@@ -129,47 +129,75 @@ Pretty snazzy eh?
 
 ### Giving the authors some books!
 
-While this API view is pretty slick, it's a one for one with the database. Let's kick up our API view by composing a more complex data set for Authors, we're going to also include a list of all books as well. Open `bookreview/serializers.py` and add the following line of code immediately after the docstring:
+While this API view is pretty slick, it's a one for one with the database. Let's kick up our API view by composing a more complex data set for Authors by including a list of all of their books. Open `bookreview/serializers.py` and add the following line of code before the AuthorSerializer class definition.
 
 ```
-books = serializers.SerializerMethodField('get_books')
+class BookSerializer(serializers.ModelSerializer):
+    """
+    Serializing all the Books
+    """
+    class Meta:
+        model = Book
+        fields = ('id', 'title', 'isbn')
 ```
 
-Before we move on, let's examine this line. The serializer is clever...because we indicated which Model it should serialize, it knows everything about that model...properties, lengths, defaults, etc. Notice that we're not defining first_name, last_name, or id directly within the serializer, we're only indicating which fields should be returned to the API in the `fields` property. Try removing first_name from the list, then reload the browser window.
+Before we can add books to the Author serializer, we have to serialize Books. This should look completely familiar to you. Because it's almost identical to the AuthorSerializer we're not going to discuss it.
 
-Because the DRF already knows about the properties of the model, it doesn't require us to repeat ourselves. We could just as easily add the following lines to the serializer and the DRF would be just as happy.
-
-```
-first_name = serializers.Field(source='first_name')
-last_name = serializers.Field(source='last_name')
-```
-
-The `serializers.field` method allows you to point to an existing property of the Model, the `source` field, and allows you to explicitly name it something else when returning it to the end user. But what about `serializers.SerializerMethodField`? That allows you to create a custom property, one that's not directly tied to the model, whose content is the result of a method call. In our case, we're going to return an array of books. Let's add that custom method now. Immediately after the `class Meta` definition add the following lines:
+Next, add the following line immediately after the docstring of the AuthorSerializer class:
 
 ```
-def get_books(self, obj):
-    books = Book.objects.filter(author=obj)
-    return [
-        {
-            'id': book.id,
-            'title': book.title,
-            'isbn': book.isbn,
-        }
-        for book in books]
+books = BookSerializer(many=True)
 ```
 
-Then lastly we need to add our new property, books, to the list of fields. Change this:
-
-```
-fields = ('id', 'first_name', 'last_name')
-```
-to this:
+Then add books to the fields property of the inner Meta class of the AuthorSerializer:
 
 ```
 fields = ('id', 'first_name', 'last_name', 'books')
 ```
 
-Reload the `/authors/` endpoint and you should now see an array of books coming in for each author. Not bad for just a few more lines of code eh?
+Reload the `/authors/` endpoint and you should now see an array of books coming in for each author. Not bad for just a few more lines of code eh?.
+
+![image](images/good-guy.jpg =x300)
+
+Good guy DRF indeed!
+
+#### Use SerializerMethodField to create custom properties
+
+The serializer is clever...when we indicate which Model it should serialize within the inner Meta class, it knows everything about that model...properties, lengths, defaults, etc. Notice that we're not defining any of the properties found on the model directly within the serializer, we're only indicating which fields should be returned to the API in the `fields` property.
+
+Because the DRF already knows about the properties of the model, it doesn't require us to repeat ourselves. If we wanted we could be explicit in the BookSerializer and add the following lines...and the DRF would be just as happy.
+
+```
+title = serializers.Field(source='title')
+isbn = serializers.Field(source='isbn')
+```
+
+The `serializers.field` method allows you to point to an existing property of the Model, the `source` field, and allows you to explicitly name it something else when returning it to the end user. But what about `serializers.SerializerMethodField`? That allows you to essentially create a custom property, one that's not directly tied to the model, whose content is the result of a method call. In our case, we're going to return a URL which contains a list of places you could go to purchase the book. Let's add that custom method now.
+
+Immediately after the docstring of the BookSerializer add the following string:
+
+```
+search_url = serializers.SerializerMethodField('get_search_url')
+```
+Then after the `class Meta` definition of the BookSerializer add the following lines:
+
+```
+def get_search_url(self, obj):
+    return "http://www.isbnsearch.org/isbn/{}".format(obj.isbn)
+```
+
+Then lastly we need to add our new property, books, to the list of fields. Change this:
+
+```
+fields = ('id', 'title', 'isbn')
+```
+to this:
+
+```
+fields = ('id', 'title', 'isbn', 'search_url')
+```
+
+Reload the `/authors/` endpoint and you should now see a URL coming back along with the other information about the book.
 
 ### Adding an Author endpoint
 
@@ -235,3 +263,7 @@ def post(self, *args, **kwargs):
 ```
 
 Keep in mind that while the DRF does enforce database integrity based on the properties of the Model, we're not setting any sort of security on who can access or use this form. Diving into security, logging in, and managing permissions is outside the scope of this article, but suffice it to say that [DRF does have functionality](http://www.django-rest-framework.org/api-guide/permissions) for allowing access to the Views you've been working with, and it's fairly trivial to set up.
+
+## Finishing up
+
+You've learned quite a lot about the Django Rest Framework now: how to use implement a web-viewable API which can return JSON for you, how to configure serializers to compose and transform your data, and how to use class based views to abstract away boilerplate code. The DRF has more to it than the few bits we were able to cover, but I hope you'll find it useful for your next application.
