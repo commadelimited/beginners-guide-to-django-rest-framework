@@ -10,11 +10,13 @@ class BookSerializer(serializers.ModelSerializer):
     Serializing all the Books
     """
 
+    search_url = serializers.SerializerMethodField('get_search_url')
+
     class Meta:
         model = Book
-        fields = ('id', 'title', 'isbn')
+        fields = ('id', 'title', 'isbn', 'search_url')
 
-    def search_url(self, obj):
+    def get_search_url(self, obj):
         return "http://www.isbnsearch.org/isbn/{}".format(obj.isbn)
 
 
