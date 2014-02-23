@@ -10,8 +10,7 @@ def index_view(request):
     Ensure the user can only see their own profiles.
     """
     response = {
-        'authors': Author.objects.all(),
-        # 'books': Book.objects.all(),
+        'authors': Author.objects.all()
     }
     return render(request, 'index.html', response)
 
