@@ -22,7 +22,7 @@ class Book(models.Model):
     objects = BookManager()
     title = models.CharField(max_length=200)
     isbn = models.CharField(max_length=20)
-    author = models.ForeignKey(Author, related_name='authors')
+    author = models.ForeignKey(Author, related_name='books')
 
     def __unicode__(self):
         return self.title
